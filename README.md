@@ -62,13 +62,13 @@ mix.imgs({
 })
 ```
 
-Process images in all environnements EXCEPT for 'production':
+Generate thumbnails without the full-sized source images:
 ```js
 mix.imgs({
     source: 'resources/images/photos',
     destination: 'public/images/photos/thumbnails',
     thumbnailsSizes: [300, 600], // Generate thumbnails with 300px and 600px width.
-    thumbnailsOnly: false, // Do not copy the original (full-sized) images over.
+    thumbnailsOnly: true, // Do not copy the original (full-sized) images over.
 })
 ```
 
