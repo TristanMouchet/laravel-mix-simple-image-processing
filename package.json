@@ -1,0 +1,35 @@
+{
+  "name": "laravel-mix-simple-image-processing",
+  "version": "1.0.0",
+  "description": "A simple laravel mix plugin to copy/minify/resize images",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TristanMouchet/laravel-mix-simple-image-processing.git"
+  },
+  "dependencies": {
+    "fs-extra": "^8.1.0",
+    "glob": "^7.1.6",
+    "image-size": "^0.8.3",
+    "imagemin": "^7.0.1",
+    "imagemin-jpegtran": "^6.0.0",
+    "imagemin-pngquant": "^8.0.0",
+    "imagemin-webp": "^5.1.0",
+    "path": "^0.12.7",
+    "sharp": "^0.24.0"
+  },
+  "scripts": {
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "keywords": [
+    "image",
+    "picture",
+    "processing",
+    "copy",
+    "resize",
+    "minify",
+    "optimize"
+  ],
+  "author": "Tristan Mouchet",
+  "license": "ISC"
+}
