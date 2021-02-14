@@ -65,7 +65,7 @@ class SimpleImageProcessor {
             thumbnailsSizes.forEach((w) => {
                 if (width < w) {
                     warnings = true;
-                    console.warn("\x1b[33m"+'WARN'+"\x1b[0m"+': mix.imgs() # Image "'+fromImagePath+'" (width: '+width+' px) is generating a thumbnail (width: '+w+' px) with a stretched resolution.')
+                    console.warn('mix.imgs() '+"\x1b[33m"+'WARN'+"\x1b[0m"+' Image "'+fromImagePath+'" (width: '+width+'px) is generating a thumbnail "'+destinationFolder+name+thumbnailsSuffix+w+ext+'" with a stretched resolution.')
                 }
 
                 sharp(fromImagePath)
@@ -100,7 +100,7 @@ class SimpleImageProcessor {
         })
 
         if (warnings) {
-            console.log('');
+            console.log('')
         }
     }
 }

@@ -26,6 +26,14 @@ mix.imgs({
 })
 ```
 
+Executing the module (the following exemple for the "dev" environnement):
+
+```
+npm run dev
+```
+
+Note: when running `npm run watch` the module is only executed once at the beginning.
+
 
 ## Options
 
