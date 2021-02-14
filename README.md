@@ -33,7 +33,7 @@ Here is the list of available options when passing an object to the mix.imgs() m
 
 | Option | Type | Default value | Description |
 | --- | --- | --- | --- |
-| disable | Boolean | `false` | Wether to disabled the execution of the plugin or not, can be used to disable the execution on specific environnements. |
+| disable | Boolean | `false` | Wether to disable the execution of the plugin or not, can be used to disable the execution on specific environnements. |
 | source | String | `'resources/images'` | Path to the folder containing the images that will be used as input of the processing functions (images in sub-folders are also included). |
 | destination | String | `'public/images'` | Path to the folder where the images will be saved (with source-like sub-folders). |
 | thumbnailsSizes | Array[Int] | `[]` | A list of maximum-width (in pixel) thumbnail to generate. E.g. `[300, 600]` would generate 2 thumbnails for each image processed, one with a 300px width and one with a 600px width. The height of the images are calculated proportionally. The plugin will emit a warning for each value superior at the width of the source image. |
@@ -57,7 +57,7 @@ mix.imgs({
 Process images in all environnements EXCEPT for 'production':
 ```js
 mix.imgs({
-    disable: process.env.NODE_ENV !== 'production',
+    disable: process.env.NODE_ENV === 'production',
     // ...
 })
 ```
