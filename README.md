@@ -1,5 +1,5 @@
 
-# Laravel Mix - Simple Image processing
+# Laravel Mix - Simple Image Processing
 
 A simple laravel mix plugin to copy/minify/resize images in your projects.
 

@@ -47,6 +47,8 @@ class SimpleImageProcessor {
             fs.copySync(source, destination)
         }
 
+        let warnings = false;
+
         glob.sync(source + '/**/*').forEach((fromImagePath) => {
             if (fromImagePath.match(/\.(jpe?g|png|gif)$/i) === null) {
                 return
@@ -54,7 +56,7 @@ class SimpleImageProcessor {
 
             let {root, dir, base, ext, name} = path.parse(fromImagePath)
             let width = imageSize(fromImagePath).width
-            let destinationFolder = destination + dir.replace(source, '') + '/';
+            let destinationFolder = destination + dir.replace(source, '') + '/'
 
             if (!fs.existsSync(destinationFolder)) {
                 fs.mkdirSync(destinationFolder);
@@ -62,7 +64,8 @@ class SimpleImageProcessor {
 
             thumbnailsSizes.forEach((w) => {
                 if (width < w) {
-                    return
+                    warnings = true;
+                    console.warn("\x1b[33m"+'WARN'+"\x1b[0m"+': mix.imgs() # Image "'+fromImagePath+'" (width: '+width+' px) is generating a thumbnail (width: '+w+' px) with a stretched resolution.')
                 }
 
                 sharp(fromImagePath)
@@ -71,9 +74,12 @@ class SimpleImageProcessor {
             })
 
             let files = [
-                destinationFolder + name + ext, // Full sized image (if thumbnailsOnly is set to true)
-                destinationFolder + name + thumbnailsSuffix + '*' + ext // All other thumbnails / resized images
+                destinationFolder + name + thumbnailsSuffix + '*' + ext // All thumbnails / resized images
             ];
+
+            if (!thumbnailsOnly) {
+                files.push(destinationFolder + name + ext) // Full sized images
+            }
 
             imagemin(files, {
                 destination: destinationFolder,
@@ -92,6 +98,10 @@ class SimpleImageProcessor {
                 })
             }
         })
+
+        if (warnings) {
+            console.log('');
+        }
     }
 }
 
