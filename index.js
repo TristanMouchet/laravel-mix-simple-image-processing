@@ -18,6 +18,7 @@ class SimpleImageProcessor {
             thumbnailsSizes,
             thumbnailsSuffix,
             thumbnailsOnly,
+            smallerThumbnailsOnly,
             webp,
             imageminPngquantOptions,
             imageminWebpOptions,
@@ -28,6 +29,7 @@ class SimpleImageProcessor {
             thumbnailsSizes: [],
             thumbnailsSuffix: '@',
             thumbnailsOnly: false,
+            smallerThumbnailsOnly: false,
             webp: false,
             imageminPngquantOptions: {
                 quality: [0.3, 0.5]
@@ -64,8 +66,12 @@ class SimpleImageProcessor {
 
             thumbnailsSizes.forEach((w) => {
                 if (width < w) {
-                    warnings = true;
-                    console.warn('mix.imgs() '+"\x1b[33m"+'WARN'+"\x1b[0m"+' Image "'+fromImagePath+'" (width: '+width+'px) is generating a thumbnail "'+destinationFolder+name+thumbnailsSuffix+w+ext+'" with a stretched resolution.')
+                    if (smallerThumbnailsOnly) {
+                        return
+                    } else {
+                        warnings = true;
+                        console.warn('mix.imgs() '+"\x1b[33m"+'WARN'+"\x1b[0m"+' Image "'+fromImagePath+'" (width: '+width+'px) is generating a thumbnail "'+destinationFolder+name+thumbnailsSuffix+w+ext+'" with a stretched resolution.')
+                    } 
                 }
 
                 sharp(fromImagePath)
