@@ -18,7 +18,7 @@ class SimpleImageProcessor {
             thumbnailsSizes,
             thumbnailsSuffix,
             thumbnailsOnly,
-            renderOnlySmallerThumbnails,
+            processOnlySmallerThumbnails,
             webp,
             imageminPngquantOptions,
             imageminWebpOptions,
@@ -29,7 +29,7 @@ class SimpleImageProcessor {
             thumbnailsSizes: [],
             thumbnailsSuffix: '@',
             thumbnailsOnly: false,
-            renderOnlySmallerThumbnails: false,
+            processOnlySmallerThumbnails: false,
             webp: false,
             imageminPngquantOptions: {
                 quality: [0.3, 0.5]
@@ -66,7 +66,7 @@ class SimpleImageProcessor {
 
             thumbnailsSizes.forEach((w) => {
                 if (width < w) {
-                    if (renderOnlySmallerThumbnails) {
+                    if (processOnlySmallerThumbnails) {
                         return
                     } else {
                         warnings = true;
