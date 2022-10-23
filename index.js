@@ -18,7 +18,7 @@ class SimpleImageProcessor {
             thumbnailsSizes,
             thumbnailsSuffix,
             thumbnailsOnly,
-            smallerThumbnailsOnly,
+            processOriginalImage,
             webp,
             imageminPngquantOptions,
             imageminWebpOptions,
@@ -29,7 +29,7 @@ class SimpleImageProcessor {
             thumbnailsSizes: [],
             thumbnailsSuffix: '@',
             thumbnailsOnly: false,
-            smallerThumbnailsOnly: false,
+            processOriginalImage: null,
             webp: false,
             imageminPngquantOptions: {
                 quality: [0.3, 0.5]
@@ -43,9 +43,16 @@ class SimpleImageProcessor {
             return
         }
 
+        // `processOriginalImage` (defaulting to `true`) is now replacing `thumbnailsOnly` (deprecated)
+        processOriginalImage = processOriginalImage !== null ? !!processOriginalImage : !thumbnailsOnly
+
         thumbnailsSizes.sort((a, b) => (a > b) ? 1 : -1)
 
-        if (!thumbnailsOnly) {
+        if (processOriginalImage) {
+            if (!fs.existsSync(destination)) {
+                fs.mkdirSync(destination, { recursive: true });
+            }
+
             fs.copySync(source, destination)
         }
 
@@ -56,22 +63,18 @@ class SimpleImageProcessor {
                 return
             }
 
-            let {root, dir, base, ext, name} = path.parse(fromImagePath)
+            let {dir, ext, name} = path.parse(fromImagePath)
             let width = imageSize(fromImagePath).width
             let destinationFolder = destination + dir.replace(source, '') + '/'
 
             if (!fs.existsSync(destinationFolder)) {
-                fs.mkdirSync(destinationFolder);
+                fs.mkdirSync(destinationFolder, { recursive: true });
             }
 
             thumbnailsSizes.forEach((w) => {
                 if (width < w) {
-                    if (smallerThumbnailsOnly) {
-                        return
-                    } else {
-                        warnings = true;
-                        console.warn('mix.imgs() '+"\x1b[33m"+'WARN'+"\x1b[0m"+' Image "'+fromImagePath+'" (width: '+width+'px) is generating a thumbnail "'+destinationFolder+name+thumbnailsSuffix+w+ext+'" with a stretched resolution.')
-                    } 
+                    warnings = true;
+                    console.warn('mix.imgs() '+"\x1b[33m"+'WARN'+"\x1b[0m"+' Image "'+fromImagePath+'" (width: '+width+'px) is generating a thumbnail "'+destinationFolder+name+thumbnailsSuffix+w+ext+'" with a stretched resolution.')
                 }
 
                 sharp(fromImagePath)
@@ -80,11 +83,11 @@ class SimpleImageProcessor {
             })
 
             let files = [
-                destinationFolder + name + thumbnailsSuffix + '*' + ext // All thumbnails / resized images
+                destinationFolder + name + thumbnailsSuffix + '*' + ext // All thumbnails / resized images (from destination)
             ];
 
-            if (!thumbnailsOnly) {
-                files.push(destinationFolder + name + ext) // Full sized images
+            if (processOriginalImage) {
+                files.push(destinationFolder + name + ext) // Full sized image (from destination)
             }
 
             imagemin(files, {
@@ -96,6 +99,10 @@ class SimpleImageProcessor {
             })
 
             if (webp) {
+                if (processOriginalImage) {
+                    files.push(fromImagePath) // Full sized image (from source)
+                }
+
                 imagemin(files, {
                     destination: destinationFolder,
                     plugins: [
