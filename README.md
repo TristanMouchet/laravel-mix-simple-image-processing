@@ -26,7 +26,7 @@ mix.imgs({
 })
 ```
 
-Executing the module (the following exemple for the "dev" environnement):
+Executing the module (the following exemple is for a "development" environnement):
 
 ```
 npm run dev
@@ -44,11 +44,13 @@ Here is the list of available options when passing an object to the mix.imgs() m
 | disable | Boolean | `false` | Wether to disable the execution of the plugin or not, can be used to disable the execution on specific environnements. |
 | source | String | `'resources/images'` | Path to the folder containing the images that will be used as input of the processing functions (images in sub-folders are also included). |
 | destination | String | `'public/images'` | Path to the folder where the images will be saved (with source-like sub-folders). |
+| processOriginalImage | Boolean | `true` | Wether or not to copy the original (full-sized) pictures in the destination folder. The full-sized pictures will be optimized in the destination folder. This option is useful if you only want to generate Webp files without copying the original files. |
+| webp | Boolean | `false` | Wether to generate WebP images. An image with the WebP format will be generated for each picture processed in the destination folder (including for all thumbnails if `thumbnailsWebp` is not specified). |
 | thumbnailsSizes | Array[Int] | `[]` | A list of maximum-width (in pixel) thumbnail to generate. E.g. `[300, 600]` would generate 2 thumbnails for each image processed, one with a 300px width and one with a 600px width. The height of the images are calculated proportionally. The plugin will emit a warning for each value superior at the width of the source image. |
 | thumbnailsSuffix | String | `'@'` | Suffix to be used for thumbnail names, the thumbnail names are based on the template `{img-name}{suffix}{width}.{img-extension}`, for example `image.jpg` could generate a thumbnail named `image@300.jpg`. |
-| thumbnailsOnly | Boolean | `false` | Wether to copy or not the original (full-sized) pictures to the destination folder. The full-sized pictures will be optimized in the destination folder. This option is useful if you only want to generate thumbnails without copying/optimizing the full-sized pictures. |
+| thumbnailsWebp | Boolean | `false` | Wether or not to generate thumbnails with a WebP extension. If not specified, will take the value of the `webp` parameter. |
+| thumbnailsWebpOnly | Boolean | `false` | Wether or not to keep thumbnails with their original extensions (when `thumbnailsWebp` is true). |
 | smallerThumbnailsOnly | Boolean | `false` | Whether to resize images to only sizes below their native width. |
-| webp | Boolean | `false` | Wether to generate WebP images. An image with the WebP format will be generated for each picture processed in the destination folder (including for all thumbnails). |
 | imageminPngquantOptions | Object | `{ quality: [0.3, 0.5] }` | Options to pass to the [imageminPngquant](https://github.com/imagemin/imagemin-pngquant#api) plugin. |
 | imageminWebpOptions | Object | `{ quality: 50 }` | Options to pass to the [imageminWebp](https://github.com/imagemin/imagemin-webp#api) plugin. |
 

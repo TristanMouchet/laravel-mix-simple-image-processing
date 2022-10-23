@@ -17,9 +17,11 @@ class SimpleImageProcessor {
             destination,
             thumbnailsSizes,
             thumbnailsSuffix,
-            thumbnailsOnly,
+            thumbnailsOnly, // deprecated (do not use)
             processOriginalImage,
             webp,
+            thumbnailsWebp,
+            thumbnailsWebpOnly,
             imageminPngquantOptions,
             imageminWebpOptions,
         } = Object.assign({
@@ -31,6 +33,8 @@ class SimpleImageProcessor {
             thumbnailsOnly: false,
             processOriginalImage: null,
             webp: false,
+            thumbnailsWebp: null,
+            thumbnailsWebpOnly: false,
             imageminPngquantOptions: {
                 quality: [0.3, 0.5]
             },
@@ -43,8 +47,12 @@ class SimpleImageProcessor {
             return
         }
 
-        // `processOriginalImage` (defaulting to `true`) is now replacing `thumbnailsOnly` (deprecated)
+        // `processOriginalImage` is now replacing `thumbnailsOnly` (which is now deprecated)
+        // It is defaulting to `!thumbnailsOnly`, e.g. `true` if `thumbnailsOnly` is not specified
         processOriginalImage = processOriginalImage !== null ? !!processOriginalImage : !thumbnailsOnly
+
+        // `thumbnailsWebp` can now be used instead of `webp` (defaulting to the `webp` value)
+        thumbnailsWebp = thumbnailsWebp !== null ? !!thumbnailsWebp : webp
 
         thumbnailsSizes.sort((a, b) => (a > b) ? 1 : -1)
 
@@ -82,32 +90,52 @@ class SimpleImageProcessor {
                     .toFile(destinationFolder + name + thumbnailsSuffix + w + ext)
             })
 
-            let files = [
-                destinationFolder + name + thumbnailsSuffix + '*' + ext // All thumbnails / resized images (from destination)
-            ];
+            let filesToOptimize = [];
+            let filesConvertToWebp = [];
 
-            if (processOriginalImage) {
-                files.push(destinationFolder + name + ext) // Full sized image (from destination)
+            if (thumbnailsSizes.length && !thumbnailsWebpOnly) {
+                filesToOptimize.push(destinationFolder + name + thumbnailsSuffix + '*' + ext) // All thumbnails / resized images (from destination)
             }
 
-            imagemin(files, {
-                destination: destinationFolder,
-                plugins: [
-                    imageminJpegtran(),
-                    imageminPngquant(imageminPngquantOptions),
-                ],
-            })
+            if (thumbnailsSizes.length && thumbnailsWebp) {
+                filesConvertToWebp.push(destinationFolder + name + thumbnailsSuffix + '*' + ext) // All thumbnails / resized images (from destination)
+            }
+
+            if (processOriginalImage) {
+                filesToOptimize.push(destinationFolder + name + ext) // Full sized image (from destination)
+            }
 
             if (webp) {
                 if (processOriginalImage) {
-                    files.push(fromImagePath) // Full sized image (from source)
+                    filesConvertToWebp.push(destinationFolder + name + ext) // Full sized image (from destination)
+                } else {
+                    filesConvertToWebp.push(fromImagePath) // Full sized image (from source)
                 }
+            }
 
-                imagemin(files, {
+            if (filesToOptimize.lenght) {
+                imagemin(filesToOptimize, {
+                    destination: destinationFolder,
+                    plugins: [
+                        imageminJpegtran(),
+                        imageminPngquant(imageminPngquantOptions),
+                    ],
+                })
+            }
+
+            if (filesConvertToWebp.length) {
+                imagemin(filesConvertToWebp, {
                     destination: destinationFolder,
                     plugins: [
                         imageminWebp(imageminWebpOptions)
                     ],
+                }).then(function (r) {
+                    if (thumbnailsWebp && thumbnailsWebpOnly) {
+                        thumbnailsSizes.forEach((w) => {
+                            // Delete all original thumbnail files
+                            fs.unlinkSync(destinationFolder + name + thumbnailsSuffix + w + ext);
+                        })
+                    }
                 })
             }
         })
