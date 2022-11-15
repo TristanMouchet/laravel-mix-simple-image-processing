@@ -81,6 +81,8 @@ class SimpleImageProcessor {
                 fs.mkdirSync(destinationFolder, { recursive: true });
             }
 
+            let generatedTumbnailFiles = [];
+
             thumbnailsSizes.forEach((w) => {
                 if (width < w) {
                     if (smallerThumbnailsOnly) {
@@ -88,8 +90,10 @@ class SimpleImageProcessor {
                     } else {
                         warnings = true;
                         console.warn('mix.imgs() '+"\x1b[33m"+'WARN'+"\x1b[0m"+' Image "'+fromImagePath+'" (width: '+width+'px) is generating a thumbnail "'+destinationFolder+name+thumbnailsSuffix+w+ext+'" with a stretched resolution.')
-                    } 
+                    }
                 }
+
+                generatedTumbnailFiles.push(destinationFolder + name + thumbnailsSuffix + w + ext)
 
                 sharp(fromImagePath)
                     .resize(w)
@@ -137,9 +141,9 @@ class SimpleImageProcessor {
                     ],
                 }).then(function (r) {
                     if (thumbnailsWebp && thumbnailsWebpOnly) {
-                        thumbnailsSizes.forEach((w) => {
-                            // Delete all original thumbnail files
-                            fs.unlinkSync(destinationFolder + name + thumbnailsSuffix + w + ext);
+                        // Delete all original thumbnail files
+                        generatedTumbnailFiles.forEach((filePath) => {
+                            fs.unlinkSync(filePath);
                         })
                     }
                 })
